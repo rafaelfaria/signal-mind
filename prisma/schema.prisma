@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ChannelKind {
+  reddit
+  x
+  discord
+  forum
+  custom
+}
+
+enum OpportunityStatus {
+  new
+  triaged
+  drafting
+  awaiting_approval
+  scheduled
+  closed
+}
+
+enum DraftStatus {
+  draft
+  pending_review
+  pending_approval
+  approved
+  scheduled
+  sent
+  failed
+}
+
+model Workspace {
+  id            String        @id @default(cuid())
+  name          String
+  slug          String        @unique
+  timezone      String        @default("Australia/Brisbane")
+  channels      Channel[]
+  opportunities Opportunity[]
+  drafts        Draft[]
+  automations   AutomationRule[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Channel {
+  id           String        @id @default(cuid())
+  workspaceId  String
+  name         String
+  kind         ChannelKind
+  handle       String?
+  isActive     Boolean       @default(true)
+  configJson   Json?
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  opportunities Opportunity[]
+  drafts       Draft[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Opportunity {
+  id           String             @id @default(cuid())
+  workspaceId  String
+  channelId    String
+  title        String
+  summary      String?
+  sourceUrl    String?
+  authorHandle String?
+  priority     Int                @default(50)
+  status       OpportunityStatus  @default(new)
+  metadataJson Json?
+  workspace    Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  channel      Channel            @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  drafts       Draft[]
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+}
+
+model Draft {
+  id             String      @id @default(cuid())
+  workspaceId    String
+  channelId      String
+  opportunityId  String?
+  title          String
+  body           String
+  status         DraftStatus @default(draft)
+  scheduledFor   DateTime?
+  assignedTo     String?
+  metadataJson   Json?
+  workspace      Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  channel        Channel     @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  opportunity    Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model AutomationRule {
+  id           String    @id @default(cuid())
+  workspaceId  String
+  name         String
+  description  String?
+  isEnabled    Boolean   @default(true)
+  triggerJson  Json
+  actionJson   Json
+  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
