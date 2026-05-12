@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Signal Mind",
-  description: "Scalable community operations cockpit",
+  description: "Signal Mind - scalable community operations cockpit",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
