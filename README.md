@@ -44,6 +44,46 @@ npm run dev
 
 Then open `http://localhost:3000`.
 
+## Managed local stack
+
+Signal Mind now runs locally in Docker, in the same style as Reddit Manager:
+
+```bash
+cd /home/pi/.openclaw/workspace/signal-mind
+docker compose up -d --build
+npm run db:push
+```
+
+Access it at:
+- `http://127.0.0.1:3001`
+- `http://192.168.0.100:3001`
+
+Useful commands:
+
+```bash
+docker compose ps
+docker compose logs -f web
+docker compose restart web
+docker compose down
+```
+
+## Agent API
+
+Signal Mind exposes API-key protected endpoints so an OpenClaw-style agent can use it the same way Reddit Manager is used by the Reddit agent.
+
+Headers:
+
+```bash
+X-API-Key: <AGENT_API_KEY>
+```
+
+Endpoints:
+- `GET/POST /api/v1/workspaces`
+- `GET/POST /api/v1/channels`
+- `GET/POST /api/v1/opportunities`
+- `GET/POST /api/v1/drafts`
+- `GET /api/health`
+
 ## Next build steps
 
 1. Add auth and workspace switching

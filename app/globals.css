@@ -98,6 +98,12 @@ a {
   margin-top: 28px;
 }
 
+.live-indicator {
+  margin-top: 18px;
+  font-size: 0.92rem;
+  color: #cbd5e1;
+}
+
 .primary-button,
 .secondary-button {
   border-radius: 999px;

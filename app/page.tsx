@@ -1,7 +1,8 @@
 import { Card, Pill, SectionHeading } from "@/components/ui";
-import { drafts, metrics, opportunities, roadmap } from "@/lib/data";
+import { getDashboardData } from "@/lib/dashboard";
 
-export default function Home() {
+export default async function Home() {
+  const { drafts, metrics, opportunities, roadmap, hasLiveData } = await getDashboardData();
   return (
     <main className="shell">
       <section className="hero">
@@ -16,11 +17,12 @@ export default function Home() {
             <a href="#overview" className="primary-button">View MVP</a>
             <a href="#architecture" className="secondary-button">See architecture</a>
           </div>
+          <p className="live-indicator">{hasLiveData ? "Live database connected" : "Showing seeded MVP demo state until live records land"}</p>
         </div>
         <Card className="hero-panel">
           <div className="panel-topline">
             <span>Workspace</span>
-            <Pill tone="good">Healthy</Pill>
+            <Pill tone={hasLiveData ? "good" : "neutral"}>{hasLiveData ? "Live" : "Demo"}</Pill>
           </div>
           <h3>The Club House</h3>
           <p className="muted">A flexible setup for social communities, events, and founder-led engagement.</p>
