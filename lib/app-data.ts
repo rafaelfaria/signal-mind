@@ -38,6 +38,11 @@ export type InboxViewData = {
   drafts: DraftSummary[];
 };
 
+export type DraftsViewData = {
+  workspace: WorkspaceSummary;
+  drafts: DraftSummary[];
+};
+
 function toInitials(name: string) {
   return name
     .split(" ")
@@ -190,6 +195,14 @@ export async function getInboxViewData(): Promise<InboxViewData> {
       drafts: fallbackDrafts,
     };
   }
+}
+
+export async function getDraftsViewData(): Promise<DraftsViewData> {
+  const inbox = await getInboxViewData();
+  return {
+    workspace: inbox.workspace,
+    drafts: inbox.drafts,
+  };
 }
 
 export function getSettingsSections() {
