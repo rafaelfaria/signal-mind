@@ -9,7 +9,7 @@ export default function Home() {
           <span className="hero-badge">Option B · scalable from day one</span>
           <h1>Community ops that starts with Reddit, but is not trapped by Reddit.</h1>
           <p>
-            Signal Desk is the operator layer: one clean control room for discovering conversations,
+            Signal Mind is the operator layer: one clean control room for discovering conversations,
             drafting responses, approving output, and expanding into new channels without rebuilding the product.
           </p>
           <div className="hero-actions">

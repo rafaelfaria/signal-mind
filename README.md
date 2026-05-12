@@ -1,6 +1,6 @@
-# Signal Desk
+# Signal Mind
 
-Signal Desk is a scalable community operations cockpit: one product, multiple channels, approval-first workflows, and a clean operator UI.
+Signal Mind is a scalable community operations cockpit: one product, multiple channels, approval-first workflows, and a clean operator UI.
 
 This initial MVP deliberately avoids being Reddit-only. Reddit can be the first adapter, but the product model is channel-agnostic from day one.
 
