@@ -69,13 +69,24 @@ kbd {
   min-width: 0;
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow: visible;
 }
 
 .mobile-nav-toggle,
 .mobile-nav-scrim,
 .mobile-topbar {
   display: none;
+}
+
+.mobile-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 35;
+  background: rgba(10, 11, 13, 0.92);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px);
 }
 
 .sidebar {
@@ -467,7 +478,7 @@ kbd {
 }
 
 .header-actions {
-  gap: 8px;
+  gap: 12px;
 }
 
 .header-actions.floating {
@@ -1193,6 +1204,7 @@ kbd {
 
   .app-main {
     min-height: 100vh;
+    padding-top: 61px;
   }
 
   .mobile-nav-toggle {
@@ -1202,17 +1214,11 @@ kbd {
   }
 
   .mobile-topbar {
-    position: sticky;
-    top: 0;
-    z-index: 35;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
     gap: 10px;
     padding: 12px 14px;
-    background: rgba(10, 11, 13, 0.92);
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    backdrop-filter: blur(16px);
     min-width: 0;
     width: 100%;
     max-width: 100%;
@@ -1225,8 +1231,8 @@ kbd {
     width: 100%;
   }
 
-  .mobile-topbar-actions {
-    gap: 8px;
+.mobile-topbar-actions {
+    gap: 10px;
     flex: 0 0 auto;
   }
 
@@ -1304,14 +1310,6 @@ kbd {
 
   .mobile-inbox-shell .list-panel {
     border-right: 0;
-  }
-
-  .mobile-inbox-shell .inbox-header {
-    position: sticky;
-    top: 61px;
-    z-index: 20;
-    background: rgba(10, 11, 13, 0.94);
-    backdrop-filter: blur(16px);
   }
 
   .mobile-detail-scrim {
@@ -1396,7 +1394,7 @@ kbd {
 
   .header-actions.floating {
     display: flex;
-    gap: 8px;
+    gap: 10px;
   }
 }
 
