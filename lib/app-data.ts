@@ -1,47 +1,13 @@
 import { prisma } from "@/lib/prisma";
-
-export type InboxItem = {
-  id: string;
-  title: string;
-  preview: string;
-  source: string;
-  workspace: string;
-  age: string;
-  status: string;
-  assignee: string;
-  priority: "high" | "medium" | "low";
-  channel: string;
-  tags: string[];
-};
-
-export type DraftSummary = {
-  title: string;
-  body: string;
-  status: string;
-  channel: string;
-  assignee: string;
-};
-
-export type WorkspaceSummary = {
-  name: string;
-  initials: string;
-  unread: number;
-  openOpportunities: number;
-  readyDrafts: number;
-  activeChannels: number;
-};
-
-export type InboxViewData = {
-  workspace: WorkspaceSummary;
-  items: InboxItem[];
-  selected: InboxItem;
-  drafts: DraftSummary[];
-};
-
-export type DraftsViewData = {
-  workspace: WorkspaceSummary;
-  drafts: DraftSummary[];
-};
+import type {
+  DraftSummary,
+  DraftsViewData,
+  InboxItem,
+  InboxViewData,
+  SettingsNavGroup,
+  SettingsSection,
+  SettingsViewData,
+} from "@/lib/view-models";
 
 function toInitials(name: string) {
   return name
@@ -121,6 +87,50 @@ const fallbackDrafts: DraftSummary[] = [
   },
 ];
 
+const settingsNavGroups: SettingsNavGroup[] = [
+  {
+    title: "Preferences",
+    items: [
+      { label: "General", active: true },
+      { label: "Profile" },
+      { label: "Notifications" },
+      { label: "Security & access" },
+      { label: "Connected accounts" },
+    ],
+  },
+  {
+    title: "Administration",
+    items: [{ label: "Workspace" }, { label: "Teams" }, { label: "Members" }, { label: "API" }],
+  },
+];
+
+const settingsSections: SettingsSection[] = [
+  {
+    title: "General",
+    items: [
+      { label: "Default home view", description: "Where operators land when they open Signal Mind.", value: "Inbox" },
+      { label: "Display density", description: "Controls how much queue and conversation context is visible.", value: "Comfortable" },
+      { label: "First day of the week", description: "Used for schedules, reporting, and planner views.", value: "Monday" },
+    ],
+  },
+  {
+    title: "Interface and theme",
+    items: [
+      { label: "Sidebar layout", description: "Keep workspace navigation, inbox, and settings accessible from one rail.", value: "Expanded" },
+      { label: "Font size", description: "Global typography scale for the operator workspace.", value: "Default" },
+      { label: "Use pointer cursors", description: "Makes the UI feel more app-like on dense interactive surfaces.", toggle: false },
+    ],
+  },
+  {
+    title: "Workspace management",
+    items: [
+      { label: "New user invitations", description: "Who can invite new members into the workspace.", value: "Only admins" },
+      { label: "Team creation", description: "Who can create new teams or client pods inside Signal Mind.", value: "All members" },
+      { label: "Manage templates", description: "Controls who can update shared drafting and reply templates.", value: "All members" },
+    ],
+  },
+];
+
 export async function getInboxViewData(): Promise<InboxViewData> {
   try {
     const [workspaces, channelsCount, openOpportunities, readyDrafts, opportunities, drafts] = await Promise.all([
@@ -151,13 +161,13 @@ export async function getInboxViewData(): Promise<InboxViewData> {
           age: timeAgo(item.createdAt),
           status: item.status.replaceAll("_", " "),
           assignee: item.priority >= 80 ? "Mate" : "Raf",
-          priority: item.priority >= 80 ? "high" as const : item.priority >= 50 ? "medium" as const : "low" as const,
+          priority: item.priority >= 80 ? "high" : item.priority >= 50 ? "medium" : "low",
           channel: item.channel.name,
           tags: [item.channel.kind, item.priority >= 80 ? "High priority" : "Queued"],
         }))
       : fallbackItems;
 
-    const draftItems = drafts.length
+    const draftItems: DraftSummary[] = drafts.length
       ? drafts.map((draft) => ({
           title: draft.title,
           body: draft.body,
@@ -205,31 +215,15 @@ export async function getDraftsViewData(): Promise<DraftsViewData> {
   };
 }
 
+export async function getSettingsViewData(): Promise<SettingsViewData> {
+  const inbox = await getInboxViewData();
+  return {
+    workspace: inbox.workspace,
+    navGroups: settingsNavGroups,
+    sections: settingsSections,
+  };
+}
+
 export function getSettingsSections() {
-  return [
-    {
-      title: "General",
-      items: [
-        { label: "Default home view", description: "Where operators land when they open Signal Mind.", value: "Inbox" },
-        { label: "Display density", description: "Controls how much queue and conversation context is visible.", value: "Comfortable" },
-        { label: "First day of the week", description: "Used for schedules, reporting, and planner views.", value: "Monday" },
-      ],
-    },
-    {
-      title: "Interface and theme",
-      items: [
-        { label: "Sidebar layout", description: "Keep workspace navigation, inbox, and settings accessible from one rail.", value: "Expanded" },
-        { label: "Font size", description: "Global typography scale for the operator workspace.", value: "Default" },
-        { label: "Use pointer cursors", description: "Makes the UI feel more app-like on dense interactive surfaces.", toggle: false },
-      ],
-    },
-    {
-      title: "Workspace management",
-      items: [
-        { label: "New user invitations", description: "Who can invite new members into the workspace.", value: "Only admins" },
-        { label: "Team creation", description: "Who can create new teams or client pods inside Signal Mind.", value: "All members" },
-        { label: "Manage templates", description: "Controls who can update shared drafting and reply templates.", value: "All members" },
-      ],
-    },
-  ];
+  return settingsSections;
 }
