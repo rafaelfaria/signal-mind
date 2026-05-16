@@ -4,8 +4,6 @@ import type {
   DraftsViewData,
   InboxItem,
   InboxViewData,
-  SettingsNavGroup,
-  SettingsSection,
   SettingsViewData,
 } from "@/lib/view-models";
 
@@ -87,50 +85,6 @@ const fallbackDrafts: DraftSummary[] = [
   },
 ];
 
-const settingsNavGroups: SettingsNavGroup[] = [
-  {
-    title: "Preferences",
-    items: [
-      { label: "General", active: true },
-      { label: "Profile" },
-      { label: "Notifications" },
-      { label: "Security & access" },
-      { label: "Connected accounts" },
-    ],
-  },
-  {
-    title: "Administration",
-    items: [{ label: "Workspace" }, { label: "Teams" }, { label: "Members" }, { label: "API" }],
-  },
-];
-
-const settingsSections: SettingsSection[] = [
-  {
-    title: "General",
-    items: [
-      { label: "Default home view", description: "Where operators land when they open Signal Mind.", value: "Inbox" },
-      { label: "Display density", description: "Controls how much queue and conversation context is visible.", value: "Comfortable" },
-      { label: "First day of the week", description: "Used for schedules, reporting, and planner views.", value: "Monday" },
-    ],
-  },
-  {
-    title: "Interface and theme",
-    items: [
-      { label: "Sidebar layout", description: "Keep workspace navigation, inbox, and settings accessible from one rail.", value: "Expanded" },
-      { label: "Font size", description: "Global typography scale for the operator workspace.", value: "Default" },
-      { label: "Use pointer cursors", description: "Makes the UI feel more app-like on dense interactive surfaces.", toggle: false },
-    ],
-  },
-  {
-    title: "Workspace management",
-    items: [
-      { label: "New user invitations", description: "Who can invite new members into the workspace.", value: "Only admins" },
-      { label: "Team creation", description: "Who can create new teams or client pods inside Signal Mind.", value: "All members" },
-      { label: "Manage templates", description: "Controls who can update shared drafting and reply templates.", value: "All members" },
-    ],
-  },
-];
-
 export async function getInboxViewData(): Promise<InboxViewData> {
   try {
     const [workspaces, channelsCount, openOpportunities, readyDrafts, opportunities, drafts] = await Promise.all([
@@ -163,7 +117,7 @@ export async function getInboxViewData(): Promise<InboxViewData> {
           assignee: item.priority >= 80 ? "Mate" : "Raf",
           priority: item.priority >= 80 ? "high" : item.priority >= 50 ? "medium" : "low",
           channel: item.channel.name,
-          tags: [item.channel.kind, item.priority >= 80 ? "High priority" : "Queued"],
+          tags: [item.channel.kind, item.priority >= 80 ? "High priority" : "On Board"],
         }))
       : fallbackItems;
 
@@ -219,11 +173,5 @@ export async function getSettingsViewData(): Promise<SettingsViewData> {
   const inbox = await getInboxViewData();
   return {
     workspace: inbox.workspace,
-    navGroups: settingsNavGroups,
-    sections: settingsSections,
   };
-}
-
-export function getSettingsSections() {
-  return settingsSections;
 }

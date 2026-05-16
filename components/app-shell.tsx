@@ -1,19 +1,16 @@
 "use client";
 
 import { ReactNode, useMemo, useState } from "react";
-import { MiniIcon, NavIcon, type IconName } from "@/components/icons";
+import { MiniIcon } from "@/components/icons";
 import {
   HeaderAction,
   SidebarNavItem,
   SurfaceSection,
-  ToolButton,
   WorkspaceBadge,
 } from "@/components/shell-primitives";
 import type {
   DraftSummary,
   InboxItem,
-  SettingsNavGroup,
-  SettingsSection,
   WorkspaceSummary,
 } from "@/lib/view-models";
 
@@ -34,11 +31,6 @@ function MobileTopbar({ workspace }: { workspace: WorkspaceSummary }) {
           </div>
           <MiniIcon name="chevronDown" className="chevron-icon" />
         </div>
-      </div>
-
-      <div className="mobile-topbar-actions">
-        <ToolButton label="Search" name="search" className="circle-tool" />
-        <ToolButton label="Create" name="compose" className="circle-tool" />
       </div>
     </div>
   );
@@ -68,84 +60,6 @@ function AppShellFrame({
   );
 }
 
-function FilterPopover() {
-  const items: Array<{ label: string; icon: IconName }> = [
-    { label: "Notification type", icon: "notification" },
-    { label: "From", icon: "person" },
-    { label: "Project", icon: "projects" },
-    { label: "Issue priority", icon: "flag" },
-    { label: "Issue status type", icon: "status" },
-  ];
-
-  return (
-    <div className="popover popover-filter">
-      <div className="popover-search">
-        <span>Add Filter...</span>
-        <kbd>F</kbd>
-      </div>
-      <div className="popover-list">
-        {items.map((item) => (
-          <div className="popover-item" key={item.label}>
-            <MiniIcon name={item.icon} className="popover-icon" />
-            <span>{item.label}</span>
-            <MiniIcon name="chevronRight" className="popover-arrow-icon" />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function DisplayPopover() {
-  return (
-    <div className="popover popover-display">
-      <div className="popover-block">
-        <div className="popover-row heading">
-          <span>Ordering</span>
-          <button className="select-chip">Newest</button>
-        </div>
-      </div>
-      <div className="popover-divider" />
-      <div className="popover-block">
-        <div className="popover-row"><span>Show snoozed</span><button className="toggle small"><span /></button></div>
-        <div className="popover-row"><span>Show read</span><button className="toggle small on"><span /></button></div>
-        <div className="popover-row"><span>Show unread first</span><button className="toggle small"><span /></button></div>
-      </div>
-      <div className="popover-divider" />
-      <div className="popover-block">
-        <div className="popover-label">Display properties</div>
-        <div className="chip-row">
-          <span className="tiny-chip">ID</span>
-          <span className="tiny-chip active">Status and icon</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MorePopover() {
-  const items: Array<{ label: string; icon: IconName; active?: boolean }> = [
-    { label: "Members", icon: "members", active: true },
-    { label: "Releases", icon: "releases" },
-    { label: "Teams", icon: "team" },
-    { label: "Customize sidebar", icon: "customize" },
-  ];
-
-  return (
-    <div className="popover popover-menu">
-      {items.map((item, index) => (
-        <div key={item.label}>
-          {index === 3 ? <div className="popover-divider" /> : null}
-          <div className={`popover-menu-item ${item.active ? "active" : ""}`.trim()}>
-            <MiniIcon name={item.icon} className="menu-bullet" />
-            {item.label}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export function AppSidebar({ workspace, active = "inbox" }: { workspace: WorkspaceSummary; active?: "inbox" | "drafts" | "settings" }) {
   return (
     <aside className="sidebar">
@@ -153,53 +67,23 @@ export function AppSidebar({ workspace, active = "inbox" }: { workspace: Workspa
         <div className="workspace-switcher compact">
           <WorkspaceBadge initials={workspace.initials} />
           <div className="workspace-heading">
-            <div className="workspace-name truncate">{workspace.name}</div>
+          <div className="workspace-name truncate">{workspace.name}</div>
           </div>
           <MiniIcon name="chevronDown" className="chevron-icon" />
-        </div>
-        <div className="sidebar-actions">
-          <ToolButton label="Search" name="search" className="circle-tool" />
-          <ToolButton label="Create" name="compose" className="circle-tool" />
         </div>
       </div>
 
       <nav className="nav-group primary-nav">
         <SurfaceSection>
           <SidebarNavItem href="/inbox" icon="inbox" label="Inbox" count={workspace.unread} active={active === "inbox"} />
-          <SidebarNavItem href="/drafts" icon="drafts" label="Drafts" count={workspace.readyDrafts} active={active === "drafts"} />
+          <SidebarNavItem href="/drafts" icon="drafts" label="Board" count={workspace.readyDrafts} active={active === "drafts"} />
         </SurfaceSection>
       </nav>
 
-      <SurfaceSection className="nav-section">
-        <div className="nav-section-title">Workspace</div>
-        <SidebarNavItem icon="projects" label="Projects" muted />
-        <SidebarNavItem icon="views" label="Views" muted />
-        <details className="sidebar-popover-anchor sidebar-popover-details">
-          <summary className="nav-item muted more-nav-trigger">
-            <NavIcon name="automation" />
-            <span>More</span>
-          </summary>
-          <MorePopover />
-        </details>
-      </SurfaceSection>
-
-      <SurfaceSection className="nav-section">
-        <div className="nav-section-title">The Club House</div>
-        <SidebarNavItem icon="team" label="Issues" muted />
-        <SidebarNavItem icon="projects" label="Projects" muted />
-        <SidebarNavItem icon="views" label="Views" muted />
-      </SurfaceSection>
-
-      <SurfaceSection className="nav-section">
-        <div className="nav-section-title">Operations</div>
-        <SidebarNavItem icon="priority" label="Approvals" muted />
-        <SidebarNavItem href="/settings" icon="settings" label="Settings" active={active === "settings"} muted={active !== "settings"} />
-      </SurfaceSection>
-
       <div className="sidebar-footer">
         <div className="sidebar-footer-pill">
-          <span>Open</span>
-          <strong>{workspace.openOpportunities}</strong>
+          <span>Open items</span>
+          <strong>{workspace.unread + workspace.readyDrafts}</strong>
         </div>
       </div>
     </aside>
@@ -292,17 +176,6 @@ export function InboxList({
       <header className="panel-header inbox-header">
         <div className="panel-title-row">
           <h1>Inbox</h1>
-          <button className="ghost-dots" aria-label="More" />
-        </div>
-        <div className="header-actions floating">
-          <div className="popover-anchor">
-            <HeaderAction label="Filter" name="filter" className="tool-filter" active />
-            <FilterPopover />
-          </div>
-          <div className="popover-anchor display-anchor">
-            <HeaderAction label="Display options" name="display" className="tool-display" />
-            <DisplayPopover />
-          </div>
         </div>
       </header>
       <div className="inbox-list">
@@ -349,7 +222,7 @@ export function DetailPanel({ item, drafts }: { item: InboxItem; drafts: DraftSu
         <section className="detail-section first">
           <div className="section-title-row lined">
             <h2>Recommended response angle</h2>
-            <span>Suggested by workflow</span>
+            <span>Suggested by the agent workflow</span>
           </div>
           <div className="detail-card large-card">
             <p>
@@ -360,7 +233,7 @@ export function DetailPanel({ item, drafts }: { item: InboxItem; drafts: DraftSu
 
         <section className="detail-section">
           <div className="section-title-row lined">
-            <h2>Draft queue</h2>
+            <h2>Board</h2>
             <span>{drafts.length} active</span>
           </div>
           <div className="draft-stack spacious">
@@ -416,109 +289,220 @@ export function PropertiesPanel({ item }: { item: InboxItem }) {
 }
 
 export function DraftsBoard({ drafts }: { drafts: DraftSummary[] }) {
-  const tabs = ["Assigned", "Created", "Subscribed", "Activity"];
+  const lanes = ["Todo", "Drafting", "Ready", "Scheduled"] as const;
+  type Lane = (typeof lanes)[number];
+  type TodoItem = {
+    id: string;
+    title: string;
+    body: string;
+    status: Lane;
+    channel: string;
+    assignee: string;
+  };
+
+  const initialItems = useMemo<TodoItem[]>(() => {
+    const statusMap: Record<string, Lane> = {
+      "Pending approval": "Ready",
+      "Ready for polish": "Drafting",
+      Draft: "Drafting",
+      Approved: "Ready",
+      Scheduled: "Scheduled",
+    };
+
+    return drafts.map((draft, index) => ({
+      id: `todo-${index + 1}`,
+      title: draft.title,
+      body: draft.body,
+      status: statusMap[draft.status] ?? "Todo",
+      channel: draft.channel,
+      assignee: draft.assignee,
+    }));
+  }, [drafts]);
+
+  const [items, setItems] = useState<TodoItem[]>(initialItems);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [selectedLane, setSelectedLane] = useState<Lane>("Todo");
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [channel, setChannel] = useState("Reddit");
+  const [assignee, setAssignee] = useState("Mate");
+
+  const moveItem = (id: string, direction: "left" | "right") => {
+    setItems((current) =>
+      current.map((item) => {
+        if (item.id !== id) return item;
+        const laneIndex = lanes.indexOf(item.status);
+        const nextIndex = direction === "left" ? laneIndex - 1 : laneIndex + 1;
+        if (nextIndex < 0 || nextIndex >= lanes.length) return item;
+        return { ...item, status: lanes[nextIndex] };
+      }),
+    );
+  };
+
+  const createItem = () => {
+    if (!title.trim() || !body.trim()) return;
+    setItems((current) => [
+      {
+        id: `todo-${Date.now()}`,
+        title: title.trim(),
+        body: body.trim(),
+        status: selectedLane,
+        channel,
+        assignee,
+      },
+      ...current,
+    ]);
+    setTitle("");
+    setBody("");
+    setSelectedLane("Todo");
+    setChannel("Reddit");
+    setAssignee("Mate");
+    setCreateModalOpen(false);
+  };
 
   return (
     <section className="panel board-panel">
       <header className="panel-header board-header">
         <div>
-          <h1>My drafts</h1>
+          <h1>Board</h1>
+          <p>Working mock flow: create an item, drop it into the board, and move it through the agent workflow.</p>
         </div>
-        <div className="board-actions">
-          <HeaderAction label="Filter" name="filter" className="tool-filter" />
-          <HeaderAction label="Display" name="display" className="tool-display" />
-          <HeaderAction label="Analytics" name="analytics" className="tool-analytics" />
+        <div className="board-header-actions">
+          <button className="primary-button" onClick={() => setCreateModalOpen(true)} type="button">Create item</button>
         </div>
       </header>
 
-      <div className="tab-row">
-        {tabs.map((tab, index) => (
-          <span key={tab} className={`tab-chip ${index === 0 ? "active" : ""}`}>{tab}</span>
-        ))}
-      </div>
-
-      <div className="group-header">
-        <MiniIcon name="chevronDown" className="caret-icon" />
-        <strong>Backlog</strong>
-        <span>{drafts.length}</span>
-      </div>
-
-      <div className="issue-list">
-        {drafts.map((draft, index) => (
-          <article className="issue-row" key={draft.title}>
-            <div className="issue-main">
-              <span className="issue-code">TCH-{11 - index}</span>
-              <span className="issue-status-ring" />
-              <div className="issue-copy">
-                <strong>{draft.title}</strong>
-                <p>{draft.body}</p>
+      {createModalOpen ? (
+        <div className="todo-modal-backdrop" onClick={() => setCreateModalOpen(false)}>
+          <div
+            className="todo-modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="todo-create-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="section-title-row lined todo-composer-heading todo-modal-heading">
+              <div>
+                <h2 id="todo-create-title">Create item</h2>
+                <span>No backend wiring yet — local mock state only</span>
               </div>
+              <button className="todo-modal-close" onClick={() => setCreateModalOpen(false)} type="button">Close</button>
             </div>
-            <div className="issue-meta">
-              <span className="avatar-chip">{draft.assignee.slice(0, 2).toUpperCase()}</span>
-              <span>{draft.status}</span>
-            </div>
-          </article>
-        ))}
+
+            <form
+              className="todo-composer-grid"
+              onSubmit={(event) => {
+                event.preventDefault();
+                createItem();
+              }}
+            >
+              <label className="todo-field todo-field-wide">
+                <span>Title</span>
+                <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Write the next agent task..." />
+              </label>
+
+              <label className="todo-field todo-field-wide">
+                <span>Brief</span>
+                <textarea value={body} onChange={(event) => setBody(event.target.value)} placeholder="What should the agent actually do?" rows={4} />
+              </label>
+
+              <label className="todo-field">
+                <span>Start lane</span>
+                <select value={selectedLane} onChange={(event) => setSelectedLane(event.target.value as Lane)}>
+                  {lanes.map((lane) => <option key={lane} value={lane}>{lane}</option>)}
+                </select>
+              </label>
+
+              <label className="todo-field">
+                <span>Channel</span>
+                <select value={channel} onChange={(event) => setChannel(event.target.value)}>
+                  <option>Reddit</option>
+                  <option>LinkedIn</option>
+                  <option>Website</option>
+                  <option>Instagram</option>
+                  <option>YouTube</option>
+                </select>
+              </label>
+
+              <label className="todo-field">
+                <span>Owner</span>
+                <select value={assignee} onChange={(event) => setAssignee(event.target.value)}>
+                  <option>Mate</option>
+                  <option>Raf</option>
+                  <option>Authority Builder</option>
+                  <option>Long-form Publisher</option>
+                </select>
+              </label>
+
+              <div className="todo-composer-actions todo-modal-actions">
+                <button className="todo-modal-close" onClick={() => setCreateModalOpen(false)} type="button">Cancel</button>
+                <button className="primary-button" type="submit">Create item</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
+
+      <div className="todo-board-grid">
+        {lanes.map((lane) => {
+          const laneItems = items.filter((item) => item.status === lane);
+          return (
+            <section className="todo-lane" key={lane}>
+              <div className="todo-lane-head">
+                <div>
+                  <h3>{lane}</h3>
+                  <span>{laneItems.length} items</span>
+                </div>
+              </div>
+
+              <div className="todo-lane-stack">
+                {laneItems.length === 0 ? (
+                  <div className="todo-empty-state">Nothing here yet.</div>
+                ) : (
+                  laneItems.map((item) => (
+                    <article className="todo-card" key={item.id}>
+                      <div className="todo-card-topline">
+                        <span className="issue-code">{item.channel}</span>
+                        <span className="avatar-chip">{item.assignee.slice(0, 2).toUpperCase()}</span>
+                      </div>
+                      <strong>{item.title}</strong>
+                      <p>{item.body}</p>
+                      <div className="todo-card-footer">
+                        <span>{item.assignee}</span>
+                        <div className="todo-card-actions">
+                          <button type="button" onClick={() => moveItem(item.id, "left")} disabled={lane === lanes[0]}>Back</button>
+                          <button type="button" onClick={() => moveItem(item.id, "right")} disabled={lane === lanes[lanes.length - 1]}>Next</button>
+                        </div>
+                      </div>
+                    </article>
+                  ))
+                )}
+              </div>
+            </section>
+          );
+        })}
       </div>
     </section>
   );
 }
 
-export function SettingsLayout({
-  workspace,
-  navGroups,
-  sections,
-}: {
-  workspace: WorkspaceSummary;
-  navGroups: SettingsNavGroup[];
-  sections: SettingsSection[];
-}) {
+export function SettingsLayout({ workspace }: { workspace: WorkspaceSummary }) {
   return (
     <AppShellFrame workspace={workspace} active="settings" className="settings-wrap">
-        <aside className="settings-sidebar">
-          <a className="back-link">← Back to app</a>
-          {navGroups.map((group) => (
-            <div className="settings-nav-group" key={group.title}>
-              <div className="settings-nav-title">{group.title}</div>
-              {group.items.map((item) => (
-                <a className={`settings-nav-item ${item.active ? "active" : ""}`.trim()} key={item.label}>{item.label}</a>
-              ))}
-            </div>
-          ))}
-        </aside>
-
         <section className="settings-content panel">
           <header className="settings-header">
-            <h1>Preferences</h1>
-            <p>Quiet, scalable defaults for an operator-heavy workflow.</p>
+            <h1>Not in scope yet</h1>
+            <p>Settings are intentionally hidden for now while we get Inbox and Board feeling solid.</p>
           </header>
-
           <div className="settings-sections">
-            {sections.map((section) => (
-              <section key={section.title} className="settings-section">
-                <div className="section-title-row settings-title-row lined">
-                  <h2>{section.title}</h2>
+            <section className="settings-section">
+              <div className="settings-card">
+                <div>
+                  <h3>Current focus</h3>
+                  <p>Keep the prototype lean: opportunity inbox, Board, and a clean mock workflow end to end.</p>
                 </div>
-                <div className="settings-card-list">
-                  {section.items.map((item) => (
-                    <div className="settings-card" key={item.label}>
-                      <div>
-                        <h3>{item.label}</h3>
-                        <p>{item.description}</p>
-                      </div>
-                      {"toggle" in item ? (
-                        <button className={`toggle ${item.toggle ? "on" : ""}`} aria-label={item.label}>
-                          <span />
-                        </button>
-                      ) : (
-                        <div className="select-pill">{item.value}</div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            ))}
+              </div>
+            </section>
           </div>
         </section>
     </AppShellFrame>

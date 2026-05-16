@@ -43,37 +43,6 @@ export type DraftsViewData = {
   drafts: DraftSummary[];
 };
 
-export type SettingsNavItem = {
-  label: string;
-  active?: boolean;
-};
-
-export type SettingsNavGroup = {
-  title: string;
-  items: SettingsNavItem[];
-};
-
-export type SettingsSelectItem = {
-  label: string;
-  description: string;
-  value: string;
-};
-
-export type SettingsToggleItem = {
-  label: string;
-  description: string;
-  toggle: boolean;
-};
-
-export type SettingsItem = SettingsSelectItem | SettingsToggleItem;
-
-export type SettingsSection = {
-  title: string;
-  items: SettingsItem[];
-};
-
 export type SettingsViewData = {
   workspace: WorkspaceSummary;
-  navGroups: SettingsNavGroup[];
-  sections: SettingsSection[];
 };
